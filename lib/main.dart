@@ -118,13 +118,16 @@ class MainScreenState extends State<MainScreen> {
               TextStyle(fontStyle: FontStyle.italic, fontSize: FontSize);
 
           return ListTile(
+            subtitle: Row(
+              children: [
+                Text(Status),
+                Text(" | ", style: TextStyle_italic),
+                Text(DateTimeFormat, style: TextStyle_italic),
+              ],
+            ),
             title: Row(
               children: [
                 Text(list.list[index].text, style: TextStyle_title),
-                Text(" | ", style: TextStyle_italic),
-                Text(DateTimeFormat, style: TextStyle_italic),
-                Text(" | ", style: TextStyle_italic),
-                Text(Status, style: TextStyle_italic),
                 IconButton(
                   icon: Icon(Icons.edit),
                   iconSize: IconSize,

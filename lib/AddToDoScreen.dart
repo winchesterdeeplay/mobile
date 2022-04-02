@@ -136,7 +136,7 @@ class AddToDoScreenState extends State<AddToDoScreen> {
               onChanged: (value) => {toDoText = value},
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18.0),
-              maxLength: 15,
+              maxLength: 20,
               autofocus: true,
               decoration: InputDecoration(
                 labelText: toDoText,
