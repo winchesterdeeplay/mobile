@@ -15,12 +15,14 @@ class AddToDoScreen extends StatefulWidget {
   String toDoText;
   DateTime time;
   bool? isDone;
+  late String dbName;
 
-  AddToDoScreen(this.taskID, this.toDoText, this.time, this.isDone);
+  AddToDoScreen(
+      this.taskID, this.toDoText, this.time, this.isDone, this.dbName);
 
   @override
   State<StatefulWidget> createState() =>
-      AddToDoScreenState(taskID, toDoText, time, isDone);
+      AddToDoScreenState(taskID, toDoText, time, isDone, dbName);
 }
 
 class AddToDoScreenState extends State<AddToDoScreen> {
@@ -29,11 +31,13 @@ class AddToDoScreenState extends State<AddToDoScreen> {
   String toDoText;
   DateTime time;
   bool? isDone;
+  late String dbName;
 
-  AddToDoScreenState(this.taskID, this.toDoText, this.time, this.isDone);
+  AddToDoScreenState(
+      this.taskID, this.toDoText, this.time, this.isDone, this.dbName);
 
   Future<void> apply(
-      BuildContext context, String toDoText, DateTime time) async {
+      BuildContext context, String toDoText, DateTime localtime) async {
     AlertDialog alert = AlertDialog(
       title: Text("Empty event description"),
       content: Text("Please add description first."),
@@ -55,9 +59,9 @@ class AddToDoScreenState extends State<AddToDoScreen> {
         },
       );
     } else {
-      var db = await openDatabase('ToDoList.db');
-      int isDoneINT = isDone == false ? 0: 1;
-      String timeString = time.toString().substring(0, 19);
+      var db = await openDatabase(dbName);
+      int isDoneINT = isDone == false ? 0 : 1;
+      String timeString = localtime.toString().substring(0, 19);
       String toDoTextString = toDoText.toString();
       // start queries
       String create_table_query = """
@@ -87,7 +91,7 @@ class AddToDoScreenState extends State<AddToDoScreen> {
       }
       db.close();
       Navigator.pop(context);
-      showNotification(taskID, toDoText, time);
+      showNotification(taskID, toDoText, localtime);
     }
   }
 
@@ -103,7 +107,7 @@ class AddToDoScreenState extends State<AddToDoScreen> {
     return Colors.red;
   }
 
-  void showNotification(int? id, String title, DateTime time) async {
+  void showNotification(int? id, String title, DateTime localtime) async {
     int notifyID = id == null ? -1 : id;
     var notificationDetails = const NotificationDetails(
         android: AndroidNotificationDetails(
@@ -115,13 +119,15 @@ class AddToDoScreenState extends State<AddToDoScreen> {
       importance: Importance.max,
       icon: 'done',
     ));
-    String body = DateFormat.yMMMd().format(time);
+    String body = DateFormat.yMMMd().format(localtime);
 
-    await localNotifications.schedule(
-        notifyID, title, body, time, notificationDetails,
-        androidAllowWhileIdle: true);
+    if (localtime.isAfter(DateTime(1970, 1, 1))) {
+      await localNotifications.schedule(
+          notifyID, title, body, localtime, notificationDetails,
+          androidAllowWhileIdle: true);
 
-    setState(() {});
+      setState(() {});
+    }
   }
 
   @override
@@ -141,7 +147,6 @@ class AddToDoScreenState extends State<AddToDoScreen> {
               style: TextStyle(fontSize: 18.0),
               maxLength: 15,
               autofocus: true,
-              // enabled: true,
               decoration: InputDecoration(
                 labelText: toDoText,
               ),

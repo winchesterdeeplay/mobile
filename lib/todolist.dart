@@ -7,7 +7,12 @@ String delete_records_query = 'DELETE FROM ToDoList';
 
 class ToDoList {
   List<ToDo> list = List.empty(growable: true);
+  late String dbName;
   late List<Map> records;
+
+  ToDoList(this.records, this.dbName) {
+    buildToDoList(records);
+  }
 
   void buildToDoList(List<Map> records) {
     for (final record in records) {
@@ -22,12 +27,8 @@ class ToDoList {
     ;
   }
 
-  ToDoList(this.records) {
-    buildToDoList(records);
-  }
-
   Future<void> updateToDo() async {
-    var db = await openDatabase('ToDoList.db');
+    var db = await openDatabase(dbName);
     List<Map> temp_records = await db.rawQuery(select_records_query);
     db.close();
     list.clear();
@@ -35,13 +36,13 @@ class ToDoList {
   }
 
   Future<void> deleteAllTasks() async {
-    var db = await openDatabase('ToDoList.db');
+    var db = await openDatabase(dbName);
     await db.execute(delete_records_query);
     db.close();
   }
 
   Future<void> deleteTask(int id) async {
-    var db = await openDatabase('ToDoList.db');
+    var db = await openDatabase(dbName);
     await db.execute('DELETE FROM ToDoList WHERE id=$id');
     db.close();
   }
