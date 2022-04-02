@@ -7,28 +7,39 @@ import 'dart:io';
 import 'package:timezone/data/latest.dart';
 
 
-void main() {
+void main() async {
+  // init
+  WidgetsFlutterBinding.ensureInitialized();
+  var db = await openDatabase('ToDoList.db');
+  List<Map> records = await db.rawQuery(select_records_query);
+  db.close();
+  ToDoList list = ToDoList(records);
   initializeTimeZones();
-
+  // init
   runApp(MaterialApp(
     title: "hw1",
-    home: MainScreen(),
+    home: MainScreen(list, records),
     routes: {
-      MainScreen.id: (context) => MainScreen(),
+      MainScreen.id: (context) => MainScreen(list, records),
       "add": (context) => AddToDoScreen(null, '', DateTime(1970, 1, 1), false)
     },
   ));
 }
 
 class MainScreen extends StatefulWidget {
+  late ToDoList list;
+  late List<Map> records;
+  MainScreen(this.list, this.records);
   static const String id = "main";
 
   @override
-  State<StatefulWidget> createState() => MainScreenState();
+  State<StatefulWidget> createState() => MainScreenState(list, records);
 }
 
 class MainScreenState extends State<MainScreen> {
-  ToDoList list = ToDoList();
+  ToDoList list;
+  late List<Map> records;
+  MainScreenState(this.list, this.records);
 
   @override
   void initState() {
