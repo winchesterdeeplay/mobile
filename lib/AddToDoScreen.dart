@@ -64,14 +64,7 @@ class AddToDoScreenState extends State<AddToDoScreen> {
       String timeString = localtime.toString().substring(0, 19);
       String toDoTextString = toDoText.toString();
       // start queries
-      String create_table_query = """
-  CREATE TABLE IF NOT EXISTS ToDoList 
-  (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, 
-    description TEXT,
-    date TEXT,
-    isDone INTEGER
-  ); """;
+
       String insert_new_task_query = """
   INSERT INTO ToDoList (description, date, isDone) 
   VALUES ('$toDoTextString', '$timeString', $isDoneINT)""";
@@ -82,8 +75,6 @@ class AddToDoScreenState extends State<AddToDoScreen> {
     isDone = $isDoneINT
   WHERE id=$taskID""";
       // end queries
-
-      await db.execute(create_table_query);
       if (taskID != null) {
         await db.execute(update_task_query);
       } else {

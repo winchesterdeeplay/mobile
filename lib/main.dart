@@ -8,10 +8,19 @@ import 'package:timezone/data/latest.dart';
 
 void main() async {
   // init
+  const String create_table_query = """
+  CREATE TABLE IF NOT EXISTS ToDoList 
+  (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    description TEXT,
+    date TEXT,
+    isDone INTEGER
+  ); """;
   const String selectRecordsQuery = 'SELECT * FROM ToDoList';
   const String dbName = 'ToDoList.db';
   WidgetsFlutterBinding.ensureInitialized();
   var db = await openDatabase(dbName);
+  await db.execute(create_table_query);
   List<Map> records = await db.rawQuery(selectRecordsQuery);
   db.close();
   ToDoList list = ToDoList(records, dbName);
