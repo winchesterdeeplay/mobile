@@ -93,8 +93,10 @@ class MainScreenState extends State<MainScreen> {
           double PaddingSize = 2;
 
           String DateTimeFormat =
-              DateFormat.yMMMd().format(list.list[index].time);
-          DateTimeFormat = DateTimeFormat == 'Jan 1, 1970'
+              DateFormat.MMMd().format(list.list[index].time) +
+                  ', ' +
+                  DateFormat.Hm().format(list.list[index].time);
+          DateTimeFormat = DateTimeFormat == 'Jan 1, 00:00'
               ? 'without notify'
               : 'in ' + DateTimeFormat;
           String Status =
