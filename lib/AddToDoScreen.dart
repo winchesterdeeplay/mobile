@@ -56,6 +56,7 @@ class AddToDoScreenState extends State<AddToDoScreen> {
       );
     } else {
       var db = await openDatabase('ToDoList.db');
+      int isDoneINT = isDone == false ? 0: 1;
       String timeString = time.toString().substring(0, 19);
       String toDoTextString = toDoText.toString();
       // start queries
@@ -69,12 +70,12 @@ class AddToDoScreenState extends State<AddToDoScreen> {
   ); """;
       String insert_new_task_query = """
   INSERT INTO ToDoList (description, date, isDone) 
-  VALUES ('$toDoTextString', '$timeString', $isDone)""";
+  VALUES ('$toDoTextString', '$timeString', $isDoneINT)""";
       String update_task_query = """
   UPDATE ToDoList SET 
     description = '$toDoTextString',
     date = '$timeString',
-    isDone = $isDone
+    isDone = $isDoneINT
   WHERE id=$taskID""";
       // end queries
 
