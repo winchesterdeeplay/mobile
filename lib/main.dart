@@ -5,6 +5,9 @@ import 'package:todolist/AddToDoScreen.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
 import 'package:timezone/data/latest.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+final localNotifications = FlutterLocalNotificationsPlugin();
 
 void main() async {
   // init
@@ -75,13 +78,16 @@ class MainScreenState extends State<MainScreen> {
 
   Future<void> deleteAllTasks() async {
     await list.deleteAllTasks();
+    await localNotifications.cancelAll();
     setState(() {
       list.updateToDo();
+
     });
   }
 
   Future<void> deleteTask(int id) async {
     await list.deleteTask(id);
+    await localNotifications.cancel(id);
     setState(() {
       list.updateToDo();
     });
