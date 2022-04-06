@@ -1,29 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:todolist/todolist.dart';
-import 'package:todolist/AddToDoScreen.dart';
-import 'package:intl/intl.dart';
-import 'dart:io';
-import 'package:timezone/data/latest.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:timezone/data/latest.dart';
+import 'package:todolist/AddToDoScreen.dart';
+import 'package:todolist/queries.dart';
+import 'package:todolist/todolist.dart';
 
 final localNotifications = FlutterLocalNotificationsPlugin();
 
 void main() async {
   // init
-  const String create_table_query = """
-  CREATE TABLE IF NOT EXISTS ToDoList 
-  (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, 
-    description TEXT,
-    date TEXT,
-    isDone INTEGER
-  ); """;
-  const String selectRecordsQuery = 'SELECT * FROM ToDoList';
   const String dbName = 'ToDoList.db';
   WidgetsFlutterBinding.ensureInitialized();
   var db = await openDatabase(dbName);
-  await db.execute(create_table_query);
+  await db.execute(createTableQuery);
   List<Map> records = await db.rawQuery(selectRecordsQuery);
   db.close();
   ToDoList list = ToDoList(records, dbName);
@@ -34,8 +25,8 @@ void main() async {
     home: MainScreen(list, dbName),
     routes: {
       MainScreen.id: (context) => MainScreen(list, dbName),
-      "add": (context) =>
-          AddToDoScreen(null, '', DateTime(1970, 1, 1), false, dbName)
+      "add": (context) => AddToDoScreen(
+          null, '', DateTime(1970, 1, 1), false, dbName, localNotifications)
     },
   ));
 }
@@ -66,7 +57,7 @@ class MainScreenState extends State<MainScreen> {
 
   Future<void> addToDo(
       int? id, String text, DateTime time, bool isDone, String dbName) async {
-    var ats = AddToDoScreen(id, text, time, isDone, dbName);
+    var ats = AddToDoScreen(id, text, time, isDone, dbName, localNotifications);
     await Navigator.push(context, MaterialPageRoute(builder: (context) {
       return ats;
     })).then((value) => list.updateToDo());
@@ -81,7 +72,6 @@ class MainScreenState extends State<MainScreen> {
     await localNotifications.cancelAll();
     setState(() {
       list.updateToDo();
-
     });
   }
 

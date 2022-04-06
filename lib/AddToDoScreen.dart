@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:todolist/main.dart';
-import 'package:intl/intl.dart';
-import 'package:timezone/data/latest.dart';
-
-import 'package:timezone/timezone.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-final localNotifications = FlutterLocalNotificationsPlugin();
+import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:todolist/queries.dart';
 
 class AddToDoScreen extends StatefulWidget {
   int? taskID;
@@ -16,13 +11,14 @@ class AddToDoScreen extends StatefulWidget {
   DateTime time;
   bool? isDone;
   late String dbName;
+  final localNotifications;
 
-  AddToDoScreen(
-      this.taskID, this.toDoText, this.time, this.isDone, this.dbName);
+  AddToDoScreen(this.taskID, this.toDoText, this.time, this.isDone, this.dbName,
+      this.localNotifications);
 
   @override
-  State<StatefulWidget> createState() =>
-      AddToDoScreenState(taskID, toDoText, time, isDone, dbName);
+  State<StatefulWidget> createState() => AddToDoScreenState(
+      taskID, toDoText, time, isDone, dbName, localNotifications);
 }
 
 class AddToDoScreenState extends State<AddToDoScreen> {
@@ -32,9 +28,10 @@ class AddToDoScreenState extends State<AddToDoScreen> {
   DateTime time;
   bool? isDone;
   late String dbName;
+  final localNotifications;
 
-  AddToDoScreenState(
-      this.taskID, this.toDoText, this.time, this.isDone, this.dbName);
+  AddToDoScreenState(this.taskID, this.toDoText, this.time, this.isDone,
+      this.dbName, this.localNotifications);
 
   Future<void> apply(
       BuildContext context, String toDoText, DateTime localtime) async {
@@ -65,20 +62,24 @@ class AddToDoScreenState extends State<AddToDoScreen> {
       String toDoTextString = toDoText.toString();
       // start queries
 
-      String insert_new_task_query = """
-  INSERT INTO ToDoList (description, date, isDone) 
-  VALUES ('$toDoTextString', '$timeString', $isDoneINT)""";
-      String update_task_query = """
-  UPDATE ToDoList SET 
-    description = '$toDoTextString',
-    date = '$timeString',
-    isDone = $isDoneINT
-  WHERE id=$taskID""";
+      final insertQueryParams = <String, dynamic>{
+        'toDoTextString': toDoTextString,
+        'timeString': timeString,
+        'isDoneINT': isDoneINT,
+      };
+
+      final updateTaskQueryParams = <String, dynamic>{
+        'toDoTextString': toDoTextString,
+        'timeString': timeString,
+        'isDoneINT': isDoneINT,
+        'taskID': taskID,
+      };
+
       // end queries
       if (taskID != null) {
-        await db.execute(update_task_query);
+        await db.execute(updateTaskQuery.format(updateTaskQueryParams));
       } else {
-        await db.execute(insert_new_task_query);
+        await db.execute(insertNewTaskQuery.format(insertQueryParams));
       }
       db.close();
       Navigator.pop(context);

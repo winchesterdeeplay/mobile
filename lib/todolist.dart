@@ -1,9 +1,7 @@
-import 'package:sqflite/sqflite.dart';
 import 'dart:async';
-import 'dart:io';
 
-String select_records_query = 'SELECT * FROM ToDoList';
-String delete_records_query = 'DELETE FROM ToDoList';
+import 'package:sqflite/sqflite.dart';
+import 'package:todolist/queries.dart';
 
 class ToDoList {
   List<ToDo> list = List.empty(growable: true);
@@ -20,7 +18,7 @@ class ToDoList {
         id: record["id"],
         text: record["description"],
         time: DateTime.parse(record["date"]),
-        isDone: record["isDone"] == 0 ? false : true,
+        isDone: record["isDone"] != 0,
       );
       list.add(todo);
     }
@@ -29,7 +27,7 @@ class ToDoList {
 
   Future<void> updateToDo() async {
     var db = await openDatabase(dbName);
-    List<Map> temp_records = await db.rawQuery(select_records_query);
+    List<Map> temp_records = await db.rawQuery(selectRecordsQuery);
     db.close();
     list.clear();
     buildToDoList(temp_records);
@@ -37,13 +35,15 @@ class ToDoList {
 
   Future<void> deleteAllTasks() async {
     var db = await openDatabase(dbName);
-    await db.execute(delete_records_query);
+    await db.execute(deleteRecordsQuery);
     db.close();
   }
 
   Future<void> deleteTask(int id) async {
     var db = await openDatabase(dbName);
-    await db.execute('DELETE FROM ToDoList WHERE id=$id');
+    await db.execute(deleteRecordQuery.format(<String, dynamic>{
+      'id': id,
+    }));
     db.close();
   }
 
