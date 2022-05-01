@@ -38,10 +38,10 @@ class AlarmStorage{
     retrieve_alarms_ids(){
         var alarms_ids = this.storage.getAllKeys().slice()
         const num_records_idx = alarms_ids.indexOf('num_records');
-        const index_idx = alarms_ids.indexOf('index');
         if (num_records_idx > -1) {
             alarms_ids.splice(num_records_idx, 1);
         }
+        const index_idx = alarms_ids.indexOf('index');
         if (index_idx > -1){
             alarms_ids.splice(index_idx, 1);
         }
