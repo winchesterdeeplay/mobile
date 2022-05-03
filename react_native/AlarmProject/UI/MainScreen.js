@@ -1,55 +1,94 @@
-import {
-    Button,
-    StyleSheet,
-    Text,
-    View,
-} from "react-native";
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-native/no-inline-styles */
+import {Button, FlatList, StatusBar, Text, TextInput, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {addAlarm, createTable, deleteAlarm, getAlarms} from '../lib/db';
 
-import { AlarmList } from "../lib/AlarmsList";
-import { AlarmStorage } from "../lib/StorageClass";
-import  { useState } from "react";
+import {openDatabase} from 'react-native-sqlite-storage';
 
-const alarm_storage = new AlarmStorage;
+const db = openDatabase({
+  name: 'alarm_base',
+});
+const MainScreen = ({}) => {
+  const [alarmStatus, setAlarmStatus] = useState('');
+  const [alarmNotification, setAlarmNotification] = useState('');
+  const [alarmRadio, setAlarmRadio] = useState('');
+  const [alarms, setAlarms] = useState([]);
 
-const MainScreen = ({navigation, route}) => {
-    console.log();
+  const renderAlarm = ({item}) => {
     return (
-        <View style={[styles.container, {
-            flexDirection: "column"
-        }]}>
-
-            <View style={{ flex: 8, backgroundColor: "skyblue" }}>
-                <AlarmList alarm_storage={alarm_storage} />
-            </View>
-            <View style={{ flex: 1, backgroundColor: "steelblue" }}>
-                <Button
-                    style={{ fontSize: 1000 }}
-                    title='Add new Alarm'
-                    onPress={() =>
-                        navigation.navigate('Alarm', {alarm_storage: alarm_storage} )
-                    }
-                />
-            </View>
-        </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          paddingVertical: 12,
+          paddingHorizontal: 10,
+          borderBottomWidth: 1,
+          borderColor: '#ddd',
+        }}>
+        <Text style={{marginRight: 9}}>{item.id}</Text>
+        <Text style={{marginRight: 9}}>{item.status}</Text>
+        <Text style={{marginRight: 9}}>{item.notificationIN}</Text>
+        <Text style={{marginRight: 9}}>{item.radio}</Text>
+        <Button
+          title="delete"
+          onPress={() => deleteAlarm(db, item.id, setAlarms)}
+        />
+      </View>
     );
+  };
+
+  useEffect(() => {
+    function loadData() {
+      createTable(db);
+      getAlarms(db, setAlarms);
+    }
+    loadData();
+  }, []);
+
+  return (
+    <View>
+      <StatusBar backgroundColor="#222" />
+
+      <TextInput
+        placeholder="Enter alarm status"
+        value={alarmStatus}
+        onChangeText={setAlarmStatus}
+        style={{marginHorizontal: 8}}
+      />
+
+      <TextInput
+        placeholder="Enter notification date"
+        value={alarmNotification}
+        onChangeText={setAlarmNotification}
+        style={{marginHorizontal: 8}}
+      />
+
+      <TextInput
+        placeholder="Enter radio"
+        value={alarmRadio}
+        onChangeText={setAlarmRadio}
+        style={{marginHorizontal: 8}}
+      />
+
+      <Button
+        title="Submit"
+        onPress={() =>
+          addAlarm(
+            db,
+            alarmStatus,
+            setAlarmStatus,
+            alarmNotification,
+            setAlarmNotification,
+            alarmRadio,
+            setAlarmRadio,
+            setAlarms,
+          )
+        }
+      />
+
+      <FlatList data={alarms} renderItem={renderAlarm} key={al => al.id} />
+    </View>
+  );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    button: {
-        paddingHorizontal: 8,
-        paddingVertical: 6,
-        borderRadius: 4,
-        backgroundColor: "oldlace",
-        fontSize: 100,
-        alignSelf: "flex-start",
-        marginHorizontal: "1%",
-        marginBottom: 6,
-        minWidth: "48%",
-        textAlign: "center",
-    },
-});
-
-export { MainScreen };
+export {MainScreen};
