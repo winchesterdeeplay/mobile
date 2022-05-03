@@ -1,3 +1,4 @@
+import {AlarmScreen} from './UI/AlarmScreen';
 /* eslint-disable react/react-in-jsx-scope */
 import {MainScreen} from './UI/MainScreen';
 import {NavigationContainer} from '@react-navigation/native';
@@ -15,7 +16,7 @@ const App = () => {
           component={MainScreen}
           options={{title: 'Alarm Clock App'}}
         />
-        {/* <Stack.Screen name="Alarm" component={AlarmScreen} /> */}
+        <Stack.Screen name="Alarm" component={AlarmScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

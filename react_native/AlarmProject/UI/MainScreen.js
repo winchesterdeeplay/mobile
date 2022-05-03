@@ -1,42 +1,25 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-native/no-inline-styles */
-import {Button, FlatList, StatusBar, Text, TextInput, View} from 'react-native';
+import {
+  Button,
+  FlatList,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {addAlarm, createTable, deleteAlarm, getAlarms} from '../lib/db';
+import {createTable, deleteAlarm, getAlarms} from '../lib/db';
 
 import {openDatabase} from 'react-native-sqlite-storage';
 
 const db = openDatabase({
   name: 'alarm_base',
 });
-const MainScreen = ({}) => {
-  const [alarmStatus, setAlarmStatus] = useState('');
-  const [alarmNotification, setAlarmNotification] = useState('');
-  const [alarmRadio, setAlarmRadio] = useState('');
+
+const MainScreen = ({navigation, route}) => {
   const [alarms, setAlarms] = useState([]);
-
-  const renderAlarm = ({item}) => {
-    return (
-      <View
-        style={{
-          flexDirection: 'row',
-          paddingVertical: 12,
-          paddingHorizontal: 10,
-          borderBottomWidth: 1,
-          borderColor: '#ddd',
-        }}>
-        <Text style={{marginRight: 9}}>{item.id}</Text>
-        <Text style={{marginRight: 9}}>{item.status}</Text>
-        <Text style={{marginRight: 9}}>{item.notificationIN}</Text>
-        <Text style={{marginRight: 9}}>{item.radio}</Text>
-        <Button
-          title="delete"
-          onPress={() => deleteAlarm(db, item.id, setAlarms)}
-        />
-      </View>
-    );
-  };
-
   useEffect(() => {
     function loadData() {
       createTable(db);
@@ -44,51 +27,95 @@ const MainScreen = ({}) => {
     }
     loadData();
   }, []);
+  if (route.params) {
+    if (route.params.refresh) {
+      getAlarms(db, setAlarms);
+      route.params.refresh = false;
+    }
+  }
+  const renderAlarm = ({item}) => {
+    return (
+      <View style={styles.row}>
+        <Text style={styles.item}>
+          {item.status ? 'Will alarm' : 'No alarm'}
+        </Text>
+        <Text style={styles.item}>{item.notificationIN}</Text>
+        <Text style={styles.item}>{item.radio}</Text>
+        <View style={{flexDirection: 'row'}}>
+          <Pressable
+            style={[styles.button, {backgroundColor: 'blue', marginRight: 5}]}
+            onPress={() =>
+              navigation.navigate('Alarm', {
+                editId: item.id,
+                editStatus: item.status,
+                editNotificationIn: item.notificationIN,
+                editRadio: item.radio,
+              })
+            }>
+            <Text style={styles.text}>Edit</Text>
+          </Pressable>
+          <Pressable
+            style={styles.button}
+            onPress={() => deleteAlarm(db, item.id, setAlarms)}>
+            <Text style={styles.text}>Delete</Text>
+          </Pressable>
+        </View>
+      </View>
+    );
+  };
 
   return (
-    <View>
-      <StatusBar backgroundColor="#222" />
-
-      <TextInput
-        placeholder="Enter alarm status"
-        value={alarmStatus}
-        onChangeText={setAlarmStatus}
-        style={{marginHorizontal: 8}}
-      />
-
-      <TextInput
-        placeholder="Enter notification date"
-        value={alarmNotification}
-        onChangeText={setAlarmNotification}
-        style={{marginHorizontal: 8}}
-      />
-
-      <TextInput
-        placeholder="Enter radio"
-        value={alarmRadio}
-        onChangeText={setAlarmRadio}
-        style={{marginHorizontal: 8}}
-      />
-
-      <Button
-        title="Submit"
-        onPress={() =>
-          addAlarm(
-            db,
-            alarmStatus,
-            setAlarmStatus,
-            alarmNotification,
-            setAlarmNotification,
-            alarmRadio,
-            setAlarmRadio,
-            setAlarms,
-          )
-        }
-      />
-
-      <FlatList data={alarms} renderItem={renderAlarm} key={al => al.id} />
+    <View
+      style={[
+        styles.container,
+        {
+          flexDirection: 'column',
+        },
+      ]}>
+      <View style={{flex: 8}}>
+        <StatusBar backgroundColor="#222" />
+        <FlatList data={alarms} renderItem={renderAlarm} key={al => al.id} />
+      </View>
+      <View>
+        <Button
+          title="Add new Alarm"
+          onPress={() => navigation.navigate('Alarm')}
+        />
+      </View>
     </View>
   );
 };
 
-export {MainScreen};
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  button: {
+    paddingVertical: 4,
+    paddingHorizontal: 11,
+    borderRadius: 4,
+    elevation: 3,
+    backgroundColor: 'red',
+  },
+  text: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',
+  },
+  item: {
+    marginRight: 9,
+    fontSize: 16,
+  },
+  row: {
+    flexDirection: 'row',
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderColor: '#ddd',
+    margin: 0,
+  },
+});
+
+export {MainScreen, db, styles};

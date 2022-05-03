@@ -29,7 +29,6 @@ const deleteAlarm = (db, id, setAlarms) => {
       (sqlTxn, res) => {
         console.log(`alarm deleted successfully`);
         getAlarms(db, setAlarms);
-        setAlarms('');
       },
       error => {
         console.log('error on deleting alarm ' + error.message);
@@ -38,29 +37,13 @@ const deleteAlarm = (db, id, setAlarms) => {
   });
 };
 
-const addAlarm = (
-  db,
-  alarmStatus,
-  setAlarmStatus,
-  alarmNotification,
-  setAlarmNotification,
-  alarmRadio,
-  setAlarmRadio,
-  setAlarms,
-) => {
-  //   if (!alarm) {
-  //     alert('Enter alarm name');
-  //     return false;
-  //   }
-
+const addAlarm = (db, alarmStatus, alarmNotification, alarmRadio) => {
   db.transaction(txn => {
     txn.executeSql(
       insertQuery,
       [alarmStatus, alarmNotification, alarmRadio],
       (sqlTxn, res) => {
         console.log(`alarm added successfully`);
-        getAlarms(db, setAlarms);
-        setAlarms('');
       },
       error => {
         console.log('error on adding alarm ' + error.message);
@@ -77,9 +60,8 @@ const getAlarms = (db, setAlarms) => {
       (sqlTxn, res) => {
         console.log('alarms retrieved successfully');
         let len = res.rows.length;
-
+        let results = [];
         if (len > 0) {
-          let results = [];
           for (let i = 0; i < len; i++) {
             let item = res.rows.item(i);
             results.push({
@@ -89,9 +71,8 @@ const getAlarms = (db, setAlarms) => {
               radio: item.radio,
             });
           }
-
-          setAlarms(results);
         }
+        setAlarms(results);
       },
       error => {
         console.log('error on getting alarms ' + error.message);
