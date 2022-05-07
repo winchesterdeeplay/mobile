@@ -4,14 +4,17 @@ import {
   createTableQuery,
   deleteQuery,
   insertQuery,
+  selectLastIDQuery,
   selectQuery,
+  updateAlarmQuery,
+  updateStatusQuery,
 } from './queries';
 const createTable = db => {
   db.transaction(txn => {
     txn.executeSql(
       createTableQuery,
       [],
-      (sqlTxn, res) => {
+      () => {
         console.log('table created successfully');
       },
       error => {
@@ -26,7 +29,7 @@ const deleteAlarm = (db, id, setAlarms) => {
     txn.executeSql(
       deleteQuery,
       [id],
-      (sqlTxn, res) => {
+      () => {
         console.log(`alarm deleted successfully`);
         getAlarms(db, setAlarms);
       },
@@ -37,12 +40,12 @@ const deleteAlarm = (db, id, setAlarms) => {
   });
 };
 
-const addAlarm = (db, alarmStatus, alarmNotification, alarmRadio) => {
+const addAlarm = (db, alarmID, alarmStatus, alarmNotification, alarmRadio) => {
   db.transaction(txn => {
     txn.executeSql(
       insertQuery,
-      [alarmStatus, alarmNotification, alarmRadio],
-      (sqlTxn, res) => {
+      [alarmID, alarmStatus, alarmNotification, alarmRadio],
+      () => {
         console.log(`alarm added successfully`);
       },
       error => {
@@ -58,7 +61,6 @@ const getAlarms = (db, setAlarms) => {
       selectQuery,
       [],
       (sqlTxn, res) => {
-        console.log('alarms retrieved successfully');
         let len = res.rows.length;
         let results = [];
         if (len > 0) {
@@ -73,6 +75,11 @@ const getAlarms = (db, setAlarms) => {
           }
         }
         setAlarms(results);
+        let alarmsStates = [];
+        for (var i = 0; i < results.length; i++) {
+          alarmsStates.push(results[i].status);
+        }
+        console.log('alarms retrieved successfully');
       },
       error => {
         console.log('error on getting alarms ' + error.message);
@@ -81,4 +88,56 @@ const getAlarms = (db, setAlarms) => {
   });
 };
 
-export {addAlarm, getAlarms, createTable, deleteAlarm};
+const getNewID = (db, setAlarmID) => {
+  db.transaction(txn => {
+    txn.executeSql(selectLastIDQuery, [], (sqlTxn, res) => {
+      let len = res.rows.length;
+      let item = 0;
+      if (len > 0) {
+        for (let i = 0; i < len; i++) {
+          item = res.rows.item(i).ID + 1;
+        }
+      }
+      setAlarmID(item);
+    });
+  });
+};
+
+const updateStatus = (db, id, status) => {
+  db.transaction(txn => {
+    txn.executeSql(
+      updateStatusQuery,
+      [status, id],
+      () => {
+        console.log(`status updated successfully`);
+      },
+      error => {
+        console.log('error on updating status' + error.message);
+      },
+    );
+  });
+};
+
+const updateAlarm = (db, alarmStatus, alarmNotification, alarmRadio, id) => {
+  db.transaction(txn => {
+    txn.executeSql(
+      updateAlarmQuery,
+      [alarmStatus, alarmNotification, alarmRadio, id],
+      () => {
+        console.log(`alarm updated successfully`);
+      },
+      error => {
+        console.log('error on updating alarm ' + error.message);
+      },
+    );
+  });
+};
+export {
+  addAlarm,
+  getAlarms,
+  createTable,
+  deleteAlarm,
+  getNewID,
+  updateStatus,
+  updateAlarm,
+};

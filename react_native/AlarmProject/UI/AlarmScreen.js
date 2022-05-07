@@ -1,24 +1,33 @@
 /* eslint-disable no-undef */
 /* eslint-disable react-native/no-inline-styles */
-import {Button, Switch, Text, TextInput, View} from 'react-native';
+import {Button, Switch, Text, View} from 'react-native';
 import React, {useState} from 'react';
+import {addAlarm, getNewID, updateAlarm} from '../lib/db';
 
 import DatePicker from 'react-native-date-picker';
 import {Picker} from '@react-native-picker/picker';
-import {addAlarm} from '../lib/db';
 import {db} from './MainScreen';
-import {styles} from './MainScreen';
+import {onCreateTriggerNotification} from '../lib/notifications';
+import {styles} from '../lib/styles';
 
 const AlarmScreen = navigation => {
-  const [alarmStatus, setAlarmStatus] = useState(false);
+  const [alarmStatus, setAlarmStatus] = useState(0);
   const [alarmNotification, setAlarmNotification] = useState(new Date());
-  const [alarmRadio, setAlarmRadio] = useState('');
+  const [alarmRadio, setAlarmRadio] = useState(1);
+  const [alarmID, setAlarmID] = useState(0);
+  const [isUpdate, setIsUpdate] = useState(false);
 
   if (navigation.route.params) {
-    setAlarmStatus(navigation.route.params.editStatus);
+    setAlarmID(navigation.route.params.editId);
+    setAlarmStatus(navigation.route.params.editStatus === 1);
     setAlarmNotification(new Date(navigation.route.params.editNotificationIn));
     setAlarmRadio(navigation.route.params.editRadio);
+    setIsUpdate(true);
     navigation.route.params = false;
+  } else {
+    if (typeof navigation.route.params === 'undefined') {
+      getNewID(db, setAlarmID);
+    }
   }
   return (
     <View>
@@ -27,6 +36,9 @@ const AlarmScreen = navigation => {
           style={{backgroundColor: 'transparent', alignItems: 'center'}}
           date={alarmNotification}
           onDateChange={setAlarmNotification}
+          androidVariant="nativeAndroid"
+          locale="ru"
+          is24hourSource="locale"
         />
       </View>
 
@@ -34,7 +46,7 @@ const AlarmScreen = navigation => {
         <Picker
           selectedValue={alarmRadio}
           style={{width: '80%'}}
-          onValueChange={(itemValue, _) => setAlarmRadio(itemValue)}>
+          onValueChange={(itemValue, itemIndex) => setAlarmRadio(itemValue)}>
           <Picker.Item label="Radio 1" value="1" style={styles.item} />
           <Picker.Item label="Radio 2" value="2" style={styles.item} />
           <Picker.Item label="Radio 3" value="3" style={styles.item} />
@@ -44,8 +56,7 @@ const AlarmScreen = navigation => {
         <Text>Alarm?</Text>
         <Switch
           trackColor={{false: '#767577', true: '#81b0ff'}}
-          thumbColor={alarmStatus ? '#f5dd4b' : '#f4f3f4'}
-          ios_backgroundColor="#3e3e3e"
+          thumbColor={alarmStatus ? 'green' : '#f4f3f4'}
           value={alarmStatus}
           onValueChange={setAlarmStatus}
         />
@@ -54,7 +65,24 @@ const AlarmScreen = navigation => {
       <Button
         title="Save alarm"
         onPress={() => {
-          addAlarm(db, alarmStatus, +alarmNotification, alarmRadio);
+          if (!isUpdate) {
+            addAlarm(db, alarmID, alarmStatus, +alarmNotification, +alarmRadio);
+          } else {
+            updateAlarm(
+              db,
+              alarmStatus,
+              +alarmNotification,
+              alarmRadio,
+              alarmID,
+            );
+          }
+          const stringAlarmID = alarmID.toString();
+          onCreateTriggerNotification(
+            stringAlarmID,
+            alarmRadio,
+            +alarmNotification,
+            alarmStatus,
+          );
           navigation.navigation.navigate('Home', {refresh: true});
         }}
       />

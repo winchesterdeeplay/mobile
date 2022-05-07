@@ -5,17 +5,30 @@ import {
   FlatList,
   Pressable,
   StatusBar,
-  StyleSheet,
+  Switch,
   Text,
   View,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {createTable, deleteAlarm, getAlarms} from '../lib/db';
+import {createTable, deleteAlarm, getAlarms, updateStatus} from '../lib/db';
 
+import {alarmNotify} from '../lib/notifications';
+import {convertTimeStamp} from '../lib/functions';
+import notifee from '@notifee/react-native';
+import {onCreateTriggerNotification} from '../lib/notifications';
 import {openDatabase} from 'react-native-sqlite-storage';
+import {styles} from '../lib/styles';
 
 const db = openDatabase({
   name: 'alarm_base',
+});
+
+notifee.onBackgroundEvent(async ({type, detail}) => {
+  alarmNotify(type, detail);
+});
+
+notifee.onForegroundEvent(async ({type, detail}) => {
+  alarmNotify(type, detail);
 });
 
 const MainScreen = ({navigation, route}) => {
@@ -37,10 +50,23 @@ const MainScreen = ({navigation, route}) => {
     return (
       <View style={styles.row}>
         <Text style={styles.item}>
-          {item.status ? 'Will alarm' : 'No alarm'}
+          <Switch
+            trackColor={{false: '#767577', true: '#81b0ff'}}
+            thumbColor={item.status ? 'green' : '#f4f3f4'}
+            value={item.status !== 0}
+            onChange={() => {
+              updateStatus(db, item.id, !item.status);
+              onCreateTriggerNotification(
+                item.id.toString(),
+                item.radio,
+                +item.notificationIN,
+                !item.status,
+              );
+            }}
+            onValueChange={() => getAlarms(db, setAlarms)}
+          />
         </Text>
-        <Text style={styles.item}>{item.notificationIN}</Text>
-        <Text style={styles.item}>{item.radio}</Text>
+        <Text style={styles.item}>{convertTimeStamp(item.notificationIN)}</Text>
         <View style={{flexDirection: 'row'}}>
           <Pressable
             style={[styles.button, {backgroundColor: 'blue', marginRight: 5}]}
@@ -56,7 +82,15 @@ const MainScreen = ({navigation, route}) => {
           </Pressable>
           <Pressable
             style={styles.button}
-            onPress={() => deleteAlarm(db, item.id, setAlarms)}>
+            onPress={() => {
+              onCreateTriggerNotification(
+                item.id.toString(),
+                item.radio,
+                +item.notificationIN,
+                false,
+              );
+              deleteAlarm(db, item.id, setAlarms);
+            }}>
             <Text style={styles.text}>Delete</Text>
           </Pressable>
         </View>
@@ -86,36 +120,4 @@ const MainScreen = ({navigation, route}) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  button: {
-    paddingVertical: 4,
-    paddingHorizontal: 11,
-    borderRadius: 4,
-    elevation: 3,
-    backgroundColor: 'red',
-  },
-  text: {
-    fontSize: 16,
-    lineHeight: 21,
-    fontWeight: 'bold',
-    letterSpacing: 0.25,
-    color: 'white',
-  },
-  item: {
-    marginRight: 9,
-    fontSize: 16,
-  },
-  row: {
-    flexDirection: 'row',
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
-    borderColor: '#ddd',
-    margin: 0,
-  },
-});
-
-export {MainScreen, db, styles};
+export {MainScreen, db, notifee};
