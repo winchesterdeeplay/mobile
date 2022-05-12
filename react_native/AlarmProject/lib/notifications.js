@@ -60,35 +60,39 @@ async function onCreateTriggerNotification(
       NotificationManager: AndroidImportance.HIGH,
       visibility: AndroidVisibility.PUBLIC,
     });
-    await notifee.createTriggerNotification(
-      {
-        id: notificationId,
-        title: '!!!!Alarm!!!!',
-        data: {radioId: radio.toString()},
-        body: 'Open app and Switch toggle to stop Vibration and Radio:)',
-        badge: true,
-        android: {
-          channelId: channelID,
-          importance: AndroidImportance.HIGH,
-          NotificationManager: AndroidImportance.HIGH,
-          visibility: AndroidVisibility.PUBLIC,
-          pressAction: {
-            id: 'default',
-            launchActivity: 'default',
-          },
-          actions: [
-            {
-              title: 'Open',
-              pressAction: {
-                id: 'open',
-                launchActivity: 'default',
-              },
+    try {
+      await notifee.createTriggerNotification(
+        {
+          id: notificationId,
+          title: '!!!!Alarm!!!!',
+          data: {radioId: radio.toString()},
+          body: 'Open app and Switch toggle to stop Vibration and Radio:)',
+          badge: true,
+          android: {
+            channelId: channelID,
+            importance: AndroidImportance.HIGH,
+            NotificationManager: AndroidImportance.HIGH,
+            visibility: AndroidVisibility.PUBLIC,
+            pressAction: {
+              id: 'default',
+              launchActivity: 'default',
             },
-          ],
+            actions: [
+              {
+                title: 'Open',
+                pressAction: {
+                  id: 'open',
+                  launchActivity: 'default',
+                },
+              },
+            ],
+          },
         },
-      },
-      trigger,
-    );
+        trigger,
+      );
+    } catch (err) {
+      console.log(err);
+    }
   } else {
     Vibration.cancel();
     console.log('vibration ended');

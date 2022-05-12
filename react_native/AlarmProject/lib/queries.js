@@ -14,7 +14,7 @@ const selectLastIDQuery = 'SELECT max(id) AS ID FROM alarms';
 const updateAlarmQuery =
   'Update alarms SET (status, notificationIN, radio) = (?, ?, ?) WHERE id = ?';
 
-const updateStatusQuery = 'UPDATE alarms SET (status) = (?) WHERE id = ?';
+const updateStatusQuery = 'Update alarms SET (status) = (?) WHERE id = ?';
 
 export {
   createTableQuery,

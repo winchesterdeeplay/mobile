@@ -3998,7 +3998,7 @@
     "path-browserify" "^1.0.0"
     "url-parse" "^1.5.9"
 
-"expo-av@~11.2.3":
+"expo-av@^11.2.3":
   "integrity" "sha512-ptTe96s33Ct0eOsOmNTvtaWFx4B0SDkQmDfPbiuX/C2afqbLQf8geEopw7BRO8ZZl7Qe3qBMH6YLHXKTkZkTyQ=="
   "resolved" "https://registry.npmjs.org/expo-av/-/expo-av-11.2.3.tgz"
   "version" "11.2.3"
