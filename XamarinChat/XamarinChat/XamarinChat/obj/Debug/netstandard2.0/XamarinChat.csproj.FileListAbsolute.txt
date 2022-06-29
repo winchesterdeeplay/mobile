@@ -1,0 +1,16 @@
+C:\Users\sparking\source\repos\XamarinChat\XamarinChat\XamarinChat\bin\Debug\netstandard2.0\XamarinChat.deps.json
+C:\Users\sparking\source\repos\XamarinChat\XamarinChat\XamarinChat\bin\Debug\netstandard2.0\XamarinChat.dll
+C:\Users\sparking\source\repos\XamarinChat\XamarinChat\XamarinChat\bin\Debug\netstandard2.0\XamarinChat.pdb
+C:\Users\sparking\source\repos\XamarinChat\XamarinChat\XamarinChat\obj\Debug\netstandard2.0\XamarinChat.csproj.AssemblyReference.cache
+C:\Users\sparking\source\repos\XamarinChat\XamarinChat\XamarinChat\obj\Debug\netstandard2.0\XamarinChat.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\sparking\source\repos\XamarinChat\XamarinChat\XamarinChat\obj\Debug\netstandard2.0\App.xaml.g.cs
+C:\Users\sparking\source\repos\XamarinChat\XamarinChat\XamarinChat\obj\Debug\netstandard2.0\MainPage.xaml.g.cs
+C:\Users\sparking\source\repos\XamarinChat\XamarinChat\XamarinChat\obj\Debug\netstandard2.0\XamarinChat.AssemblyInfoInputs.cache
+C:\Users\sparking\source\repos\XamarinChat\XamarinChat\XamarinChat\obj\Debug\netstandard2.0\XamarinChat.AssemblyInfo.cs
+C:\Users\sparking\source\repos\XamarinChat\XamarinChat\XamarinChat\obj\Debug\netstandard2.0\XamarinChat.csproj.CoreCompileInputs.cache
+C:\Users\sparking\source\repos\XamarinChat\XamarinChat\XamarinChat\obj\Debug\netstandard2.0\XamlC.stamp
+C:\Users\sparking\source\repos\XamarinChat\XamarinChat\XamarinChat\obj\Debug\netstandard2.0\XamarinChat.dll
+C:\Users\sparking\source\repos\XamarinChat\XamarinChat\XamarinChat\obj\Debug\netstandard2.0\refint\XamarinChat.dll
+C:\Users\sparking\source\repos\XamarinChat\XamarinChat\XamarinChat\obj\Debug\netstandard2.0\XamarinChat.pdb
+C:\Users\sparking\source\repos\XamarinChat\XamarinChat\XamarinChat\obj\Debug\netstandard2.0\ref\XamarinChat.dll
+C:\Users\sparking\source\repos\XamarinChat\XamarinChat\XamarinChat\obj\Debug\netstandard2.0\RegistrationPage.xaml.g.cs

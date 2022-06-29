@@ -1,0 +1,1 @@
+C:\Users\sparking\source\repos\XamarinChat\XamarinChat\XamarinChat.UWP\XamarinChat.UWP.csproj;x86

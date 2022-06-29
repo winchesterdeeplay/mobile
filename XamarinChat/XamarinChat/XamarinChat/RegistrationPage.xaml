@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="XamarinChat.RegistrationPage">
+    <ContentPage.Content>
+        <StackLayout VerticalOptions="Center">
+            <StackLayout Padding="10">
+                <Entry Placeholder="Enter login" x:Name="Login"/>
+                <Entry x:Name="Password" Placeholder="Enter password" IsPassword="True" />
+                <Entry x:Name="PasswordChecker" Placeholder="Enter password again" IsPassword="True" />
+                <Button BackgroundColor="LightGray" x:Name="CreateAccountButton" Text="Create account" Pressed="CreateAccount_Pressed"/>
+                <Button BackgroundColor="LightGray" x:Name="MainPage" Text="Go Home" Pressed="MainPage_Pressed"/>
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

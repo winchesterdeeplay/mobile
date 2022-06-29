@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="XamarinChat.MainPage">
+
+    <StackLayout VerticalOptions="Center">
+        <Frame>
+            <StackLayout x:Name="ChatBlock" Padding="10" VerticalOptions="Center" >
+                <ListView x:Name="MessagesList">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Label>
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <FormattedString.Spans>
+                                                <Span TextColor="{Binding Color}" Text="{Binding UserLogin}"/>
+                                                <Span TextColor="{Binding Color}" Text=": "/>
+                                                <Span TextColor="Black" Text="{Binding Text}"/>
+                                            </FormattedString.Spans>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <Entry x:Name="MessageEntry"/>
+                <Button Text="Send" Pressed="Send_Pressed"/>
+                <Button BackgroundColor="LightGray" Text="LogOut" Pressed="LogOut_Pressed"/>
+            </StackLayout>
+        </Frame>
+        <Frame>
+            <StackLayout x:Name="AuthBlock"  Padding="10" VerticalOptions="Center">
+                <Entry x:Name="Login" Placeholder="Enter login"/>
+                <Entry x:Name="Password" Placeholder="Enter password" IsPassword="True" />
+                <Button BackgroundColor="LightGray" Text="Auth" Pressed="Auth_Pressed"/>
+                <Button BackgroundColor="LightGray" Text="Registration" Pressed="RegistrationPage_Pressed"/>
+            </StackLayout>
+        </Frame>
+    </StackLayout>
+
+</ContentPage>
