@@ -80,7 +80,7 @@ namespace XamarinChat
 
         private Color GetColor()
         {
-            Color randomColor = Color.FromRgb(rnd.Next(256), rnd.Next(256), 256);
+            Color randomColor = Color.FromRgb(rnd.Next(256), rnd.Next(256), 0);
             if (usedColors.Contains(randomColor)) { return GetColor(); } else { return randomColor; }
         }
 
